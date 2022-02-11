@@ -1,0 +1,44 @@
+[
+    {
+        "name": "Work",
+        "items": [
+            8
+        ]
+    },
+    {
+        "name": "Play",
+        "items": [
+            3
+        ]
+    },
+    {
+        "name": "Eat",
+        "items": [
+            2
+        ]
+    },
+    {
+        "name": "Homework",
+        "items": [
+            3
+        ]
+    },
+    {
+        "name": "Exercise",
+        "items": [
+            1
+        ]
+    },
+    {
+        "name": "Sleep",
+        "items": [
+            6
+        ]
+    },
+    {
+        "name": "Netflix",
+        "items": [
+            1
+        ]
+    }
+]
