@@ -1,0 +1,9 @@
+Exercise #1:
+
+Plot a bar chart for id vs value in datasets/barinfo.json
+What if there are two groups? How do you plot the different groups?
+
+Exercise #2:
+Plot a pie chart with legend for datasets/data.json
+
+
