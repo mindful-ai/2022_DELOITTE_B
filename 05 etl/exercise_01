@@ -1,0 +1,105 @@
+
+Mount the shared folder
+---------------------------------------------------------------------------
+sh Downloads/mountsf
+
+Starting the deamons
+---------------------------------------------------------------------------
+cd /usr/local/hadoop-2.9.1
+cd sbin
+./start-dfs.sh
+./start-yarn.sh
+
+Copy the files from the shared folder
+---------------------------------------------------------------------------
+mkdir mapred
+mkdir nyse
+
+mv Downloads/sharedfolder/hadoop/01/mrinput* mapred
+mv Downloads/sharedfolder/hadoop/01/NYSE* nyse
+
+Issue some Linux Commands to check data
+---------------------------------------------------------------------------
+
+Show top 10 lines of the file NYSE_daily
+$ head NYSE_daily
+
+Show top 20 lines of the file NYSE_dividends
+$ head -20 NYSE_dividends
+
+Show last 10 lines of the file NYSE_daily
+$ tail NYSE_daily
+
+Show last 20 lines of the file NYSE_dividends
+$ tail -20 NYSE_dividends
+
+Direct the top 10 lines from NYSE_daily to a file called NYSE_daily.sample
+$ head NYSE_daily > NYSE_daily.sample
+
+Direct the last 20 lines of the file NYSE_daily to the same file in append mode
+$ tail -20 NYSE_daily >> NYSE_daily.sample
+
+Display the contents of the file NYSE]]]]_daily.sample
+$ cat NYSE_daily.sample
+
+Get the line count of the file NYSE_daily.sample
+$ wc -l NYSE_daily.sample
+
+Remove the file NYSE_daily.sample
+$ rm NYSE_daily.sample
+
+Direct lines starting from 2nd line to the end of the file NYSE_daily to NYSE_daily.tsv
+$ tail -n +2 NYSE_daily > NYSE_daily.tsv
+
+Get the line count of the files NYSE_daily and NYSE_daily.tsv
+$ wc -l NYSE_daily*
+
+Direct lines starting from 2nd line to the end of the file NYSE_dividends to NYSE_dividends.tsv
+$ tail -n +2 NYSE_dividends > NYSE_dividends.tsv
+
+Get the line count of the files NYSE_dividends and NYSE_dividends.tsv
+$ wc -l NYSE_dividends*
+
+Show top 10 lines of the file NYSE_d*.tsv
+$ head NYSE_d*.tsv
+(You should see that the first line with the headers is not present in these files)
+
+
+Issue some Hadoop Commands to check data
+---------------------------------------------------------------------------
+
+List contents of your HDFS root (/) directory 
+$ hadoop fs -ls /
+
+List contents of your HDFS default directory 
+$ hadoop fs -ls /user/<your login-id>
+OR 
+$ hadoop fs -ls 
+# The above lists contents of your HDFS default (or your HDFS home) directory because /user/<your login-id is assumed by default>
+
+Create a sub-directory nyse in your HDFS default directory
+$ hadoop fs -mkdir nyse
+
+List contents of your HDFS default directory 
+$ hadoop fs -ls
+OR 
+$ hadoop fs -ls /user/<your login-id>
+
+Copy the file NYSE_dividends.tsv from nyse sub-directory to your newly created HDFS sub-directory named nyse
+$ hadoop fs -put nyse/NYSE_dividends.tsv nyse
+OR
+$ hadoop fs -put nyse/NYSE_dividends.tsv nyse/NYSE_dividends.tsv
+OR
+$ hadoop fs -put /home/<your-login-id>/nyse/NYSE_dividends.tsv /user/<your-login-id>/nyse/NYSE_dividends.tsv
+
+List the contents of the HDFS directory nyse
+$ hadoop fs -ls nyse
+OR
+$ hadoop fs -ls /user/<your-login-id>/nysemap
+
+Display the last 1KB of the newly copied file
+$ hadoop fs -tail /user/<your-login-id>/nyse/NYSE_dividends.tsv
+OR 
+$ hadoop fs -tail nyse/NYSE_dividends.tsv
+
+Similarly copy the file NYSE_daily.tsv to the HDFS sub-directory nyse in your HDFS default dir

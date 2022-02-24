@@ -1,0 +1,111 @@
+---------------------------------------------------------------
+CREATING TABLES and LOADING DATA: MANAGED TABLES
+---------------------------------------------------------------
+
+------------------- NYSE DAILY
+
+CREATE DATABASE IF NOT EXISTS nyse_<your-login-id>;
+USE nyse_<your-login-id>;
+
+
+set hive.cli.print.current.db=true;
+
+
+create table NYSEdaily (stexchange String,stock_symbol String,stock_date String,stock_price_open double, stock_price_high double, stock_price_low double, stock_price_close double, stock_volume double, stock_price_adj_close double) row format delimited fields terminated by "\t" lines terminated by "\n";
+
+
+
+show tables;
+
+
+describe nysedaily;
+describe formatted nysedaily;
+
+load data local inpath '/home/<your-login-id>/nyse/NYSE_daily.tsv' overwrite into table nysedaily;
+set hive.cli.print.header=true;
+select * from nysedaily limit 10;
+select * from nysedaily where stock_symbol=="JEF";
+
+------------------------------ NYSE DIVIDENDS
+
+
+create table NYSEdividends (divexchange String, divstock_symbol String, divstock_date String, dividends double) row format delimited fields terminated by "\t" lines terminated by "\n" stored as textfile;
+
+show tables;
+
+describe NYSEdividends;
+describe formatted NYSEdividends ;
+
+Load data inpath '/user/<your-login-id>/nyse/NYSE_dividends.tsv' overwrite into table nysedividends;
+
+After successfully loading data from the file in HDFS, Check for the file /user/<your-login-id>/nyse/NYSE_dividends.tsv by giving the follwoing command at $ prompt (Not at hive> prompt)
+
+$ hadoop fs -ls <path-from-the-above-command>
+
+You will notice that the file had been moved, unlike the case of a loading data from a local file.
+
+---------------------------------- Queries Practice 
+
+select * from NYSEdividends limit 20;
+
+select * from NYSEdividends where dividends>=1 limit 20;
+
+select divstock_symbol, count(divstock_symbol) as divcount from NYSEdividends group by divstock_symbol;
+
+select divstock_symbol, count(divstock_symbol) as divcount from NYSEdividends group by divstock_symbol having divcount>10;
+
+select divstock_symbol, count(divstock_symbol) as divcount from NYSEdividends where dividends>=0.5 group by divstock_symbol having divcount>10;
+
+select a.stock_symbol, a.stock_price_close from nysedaily a join nysedividends b on a.stock_symbol=b.divstock_symbol AND a.stock_date=b.divstock_date limit 10;
+
+select a.stock_symbol, a.stock_price_close, b.dividends, b.divstock_date from nysedaily a join nysedividends b on a.stock_symbol=b.divstock_symbol AND a.stock_date=b.divstock_date where a.stock_price_close>=20;
+
+drop table nysedividends;
+
+The above command drops the table. So we would lose the initial input file as it was moved from its locaiton to Hive Warehouse location. This is one of the characteristics of Managed Tables.
+
+---------------------------------------------------------------
+CREATING TABLES and LOADING DATA: EXTERNAL TABLES
+---------------------------------------------------------------
+
+Now, re-copy the file NYSE_dividends.tsv from nyse sub-directory to your newly created HDFS sub-directory named nyse
+
+$ hadoop fs -put nyse/NYSE_dividends.tsv nyse
+
+Create and external table:
+
+Create an external table in Hive with the command below which has the key word external before the word table and at the end has the location specified. Use any name for specifying the location but make sure there is no file or sub-directory already existing with this name.
+
+
+create external table NYSEdividends (divexchange String, divstock_symbol String, divstock_date String, dividends double) row format delimited fields terminated by "\t" lines terminated by "\n" stored as textfile location '/user/<your-login-id>/nysediv_ext';
+
+$ hadoop fs -ls
+
+-- In Hive check the table properties with these commands.
+
+show tables;
+describe NYSEdividends;
+describe formatted NYSEdividends;
+
+-- check if the table to be loaded is in HDFS nyse
+hadoop fs -ls nyse
+hadoop fs -put nyse/NYSE_dividends.tsv nyse
+
+-- load the file into the table
+load data inpath '/user/hduser/nyse/NYSE_dividends.tsv' overwrite into table nysedividends;
+
+-- check HDFS nyse. What do you observe? The file will be moved
+hadoop fs -ls nyse
+
+-- list the contents of the table directory nysediv_ext
+hadoop fs -ls nysediv_ext
+
+-- access some content from the table
+select * from nysedividends limit 10;
+
+-- drop the table and analyse the HDFS directories and content
+drop table nysedividends;
+hadoop fs -ls nysediv_ext;
+** Even if you drop the above table you will notice that the file with the data in the above location will still be present. It will not be removed by Hive as it is an external table.
+
+

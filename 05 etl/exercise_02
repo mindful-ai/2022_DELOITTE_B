@@ -1,0 +1,14 @@
+---------------------------------------------------------------
+MapReduce
+---------------------------------------------------------------
+
+hadoop fs -mkdir mrdata
+hadoop fs -put mapred/mrinput* mrdata
+hadoop fs -ls mrdata
+
+
+hduser@hduser-VirtualBox:~/lab02/MapRed1$
+yarn jar MapRed1.jar MR1Driver mrdata/mrinput2.txt mrdata/output2
+hadoop fs -ls mrdata
+hadoop fs -ls mrdata/output2
+hadoop fs -cat mrdata/output2/*0
