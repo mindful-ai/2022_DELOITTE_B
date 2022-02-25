@@ -1,0 +1,27 @@
+Writing the output to different target locations:
+-----------------------------------------------------------------------------------------------
+
+-- Make sure you create the dividends table again and load the data.
+-- The following commands show how you can write the output of Hive queries to different destinations.
+
+insert overwrite local directory 'nyseoutput_lfs' row format delimited
+fields terminated by '\t'
+lines terminated by '\n'
+select a.stock_symbol, a.stock_price_close, b.dividends,b.divstock_date from nysedaily a join nysedividends b on a.stock_symbol=b.divstock_symbol AND a.stock_date=b.divstock_date where a.stock_price_close>=20;
+
+-- From Linux prompt you can give the command
+$ ls -l nyseoutput_lfs
+$ head nyseoutput_lfs/00*
+-- to see the contents of the outout directory created by Hive and the top few lines of the outputfile.
+
+insert overwrite directory 'nyseoutput_hdfs'
+select a.stock_symbol, a.stock_price_close, b.dividends,b.divstock_date from nysedaily a join nysedividends b on a.stock_symbol=b.divstock_symbol AND a.stock_date=b.divstock_date where a.stock_price_close>=20;
+
+-- From Linux prompt you can give the command
+$ hadoop fs -ls nyseoutput_hdfs
+$ hadoop fs -tail nyseoutput_hdfs/00*
+-- to see the contents of the outout directory created by Hive and the last few lines (1KB) of the outputfile.
+
+create table nyseoutput_tbl as select a.stock_symbol, a.stock_price_close, b.dividends,b.divstock_date from nysedaily a join nysedividends b on a.stock_symbol=b.divstock_symbol AND a.stock_date=b.divstock_date where a.stock_price_close>=20;
+
+select * from nyseoutput_tbl limit 10;

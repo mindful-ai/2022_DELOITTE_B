@@ -1,0 +1,32 @@
+Partitioned Tables:
+------------------------------------------------------------------------------------------
+
+create external table NYSEdaily_part (stexchange String,stock_symbol String,stock_date String,stock_price_open double, stock_price_high double, stock_price_low double, stock_price_close double, stock_volume double, stock_price_adj_close double) PARTITIONED BY (Year String) row format delimited fields terminated by "\t" lines terminated by "\n" location '/user/<your-login-id>/nysedaily_part';
+
+select *, substr(stock_date,length(stock_date)-3) as year from nysedaily limit 10;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+describe NYSEdaily_part;
+
+INSERT OVERWRITE TABLE NYSEdaily_part PARTITION (year) select *, substr(stock_date,length(stock_date)-3) as year from nysedaily;
+
+show partitions nysedaily_part;
+
+-- You can use all the select quries with group by, join etc clauses on the partitioned tables just as any other table.
+
+-- List contents of the directory given in the create table command using the follwoing from Linux prompt:
+
+$ hadoop fs -ls /user/<your-login-id>/nysedaily_part
+
+-- You will notice that several sub-directories are created in the above which are the partitions and the names will be 'year=1970' or 'year=2009' etc
+-- List contents of the partitions using the command below.
+
+$ hadoop fs -ls /user/<your-login-id>/nysedaily_part/year=1970
+
+-- Display the contents of the data file in the partition with the command.
+
+$ hadoop fs -cat /user/<your-login-id>/nysedaily_part/year=1970
+
+-- The data will be a small subset of the entire daily data which belongs to this partition.
+

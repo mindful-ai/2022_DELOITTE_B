@@ -1,0 +1,33 @@
+Clustering records or Bucketing
+--------------------------------------------------------------------------------------------
+
+create external table NYSEdaily_bucket (stexchange String,stock_symbol String,stock_date String,stock_price_open double, stock_price_high double, stock_price_low double, stock_price_close double, stock_volume double, stock_price_adj_close double) PARTITIONED BY (Year String) CLUSTERED BY (stock_symbol) INTO 50 BUCKETS row format delimited fields terminated by "\t" lines terminated by "\n" location '/user/<your_login_id>/nysedaily_bucket';
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.enforce.bucketing = true;
+
+describe NYSEdaily_bucket;
+
+select *, substr(stock_date,length(stock_date)-3) as year from nysedaily limit 10;
+
+INSERT INTO TABLE NYSEdaily_bucket PARTITION (year) select *, substr(stock_date,length(stock_date)-3) as year from nysedaily;
+
+show partitions nysedaily_bucket;
+
+-- You can use all the select quries with group by, join etc clauses on the partitioned tables just as any other table.
+
+-- List contents of the directory given in the create table command using the follwoing from Linux prompt:
+
+$ hadoop fs -ls /user/<your-login-id>/nysedaily_bucket
+
+-- You will notice that several sub-directories are created in the above which are the partitions and the names will be 'year=1970' or 'year=2009' etc
+-- List contents of the partitions using the command below.
+
+$ hadoop fs -ls /user/<your-login-id>/nysedaily_bucket/year=1970
+
+-- Display the contents of the data file in the partition with the command.
+
+$ hadoop fs -cat /user/<your-login-id>/nysedaily_bucket/year=1970
+
+-- The data will be a small subset of the entire daily data which belongs to this partition.
+
