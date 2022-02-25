@@ -1,0 +1,10 @@
+Exercises 01 - 06 are Hadoop and HIVE related 
+
+01_rdd_operations:
+Assignment: 
+Check where in the DAG these points and can be added 
+Realize it practically
+    Clean up the punctuation marks
+    Remove the stop words
+    Print the top 5 used words
+    
