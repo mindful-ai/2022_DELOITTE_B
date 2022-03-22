@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>IRIS Data Input</h1>
+    <form class="" 
+          action="{{url_for('process')}}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <label for="sepal_length">Sepal Length</label>
+        <input type="text" name="sepal_length" value="0"> <br>
+        <label for="sepal_width">Sepal Width</label>
+        <input type="text" name="sepal_width" value="0"> <br>
+        <label for="petal_length">Petal Length</label>
+        <input type="text" name="petal_length" value="0"> <br>
+        <label for="petal_width">Petal Width</label>
+        <input type="text" name="petal_width" value="0"> <br>
+
+        <hr>
+        <input type="reset" name="reset" value="Reset">
+        <input type="submit" name="submit" value="Submit">
+    </form>
+</body>
+</html>
